@@ -56,5 +56,7 @@ Function Split-File
             $FileIndex++
         }
         $Reader.Close()
+        Remove-Variable -Name "Buffer"
+        [gc]::Collect()
     }
 }
