@@ -3,7 +3,7 @@
 
 ## Powershell is bad at handling large file?
 
-It's true, try run `$t = Get-Content SomeFile.large`, powershell will try load the whole file in memory and you will feel why I wrote this script.
+It's true, try run `$t = Get-Content SomeFile.large`, powershell will try load the whole file in memory and you may understand why I wrote this script.
 
 ## Make it easy.
 
