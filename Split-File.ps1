@@ -46,9 +46,12 @@ Function Split-File
         $Reader = [System.IO.File]::OpenRead($Path_.FullName)
         $Buffer = New-Object byte[] $Size
         $FileIndex = 0
+        $EstimateNumberOfFiles = [math]::Ceiling((Get-Item -Path $Path).Length/$Size)
+        $NumberSize = 1
+        while(($EstimateNumberOfFiles/[math]::Pow(10, $NumberSize)) -ge 1){$NumberSize++}
         while($Reader.Position -lt $Reader.Length)
         {
-            $FileName = '{0}\{1}.{2}{3}' -f $Path_.DirectoryName, $Path_.BaseName, $FileIndex, $Path_.Extension
+            $FileName = "{0}\{1}{3}.{2:D$NumberSize}" -f $Path_.DirectoryName, $Path_.BaseName, $FileIndex, $Path_.Extension
             Write-Output $FileName
             $Writer = [System.IO.File]::OpenWrite($FileName)
             $Writer.Write($Buffer, 0, $Reader.Read($Buffer, 0, $Buffer.Length))
