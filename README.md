@@ -7,7 +7,7 @@ It's true, try run `$t = Get-Content SomeFile.large`, powershell will try load t
 
 ## Make it easy.
 
-```
+```powershell
 PS> # Split text file by 1m lines each
 PS> . .\Split-File.ps1
 PS> Split-File -Path "LargeTextFile.txt" -Lines 1000000
