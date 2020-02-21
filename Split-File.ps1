@@ -63,3 +63,60 @@ Function Split-File
         [gc]::Collect()
     }
 }
+
+function Join-File
+{
+    PARAM(
+        [string]$Path
+    )
+    $file = Get-Item -Path $Path
+    if($file.Name -match "^(.+?)\.(0+)$")
+    {
+        $PartialFileName = $Matches[1]
+        $SequenceLength = $Matches[2].Length
+        Write-Host "Looking for range: $PartialFileName.$('0' * $SequenceLength) --> $PartialFileName.$('9' * $SequenceLength)"
+        $files = @()
+        for($i = 0; $i -le ([math]::Pow(10, $SequenceLength) - 1); $i++)
+        {
+            $File_ = Join-Path -Path $file.DirectoryName -ChildPath "$PartialFileName.$("{0:D$SequenceLength}" -f $i)"
+            Write-Host "Checking: '$File_' --- " -NoNewline
+            if(Test-Path -Path $File_)
+            {
+                Write-Host "Found" -ForegroundColor Green
+                $files += Get-Item -Path $File_
+            }
+            else
+            {
+                Write-Host "End" -ForegroundColor Yellow
+                break
+            }
+        }
+        $totalsize = 0
+        $files | %{
+            # Write-Host "Going to combine: $($_.FullName); Size: $($_.Length) bytes"
+            $totalsize += $_.Length
+        }
+        Write-Host "Total size: $totalsize bytes"
+        $output = Join-Path -Path $file.DirectoryName -ChildPath "$PartialFileName.Joined"
+        Write-Host "Output: $output"
+        if(Test-Path -Path $output)
+        {
+            throw "Path already exists: $output"
+        }
+        else
+        {
+            $fs = New-Object System.IO.FileStream @($output, [System.IO.FileMode]::Append, [System.IO.FileAccess]::Write)
+            $w = New-Object System.IO.BinaryWriter($fs)
+            $files | %{
+                $w.Write([io.file]::ReadAllBytes($_.FullName))
+            }
+            $w.Close()
+            $fs.Close()
+        }
+        Write-Host "Completed!"
+    }
+    else
+    {
+        throw "Please privide the first file, which end with .0 or .000, similar"
+    }
+}
