@@ -117,6 +117,6 @@ function Join-File
     }
     else
     {
-        throw "Please privide the first file, which end with .0 or .000, similar"
+        throw "Please provide the first file, which end with .0 or .000, similar"
     }
 }
